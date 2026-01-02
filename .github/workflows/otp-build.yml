@@ -17,7 +17,7 @@ jobs:
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/var/opentripplanner" \
-            -e JAVA_OPTIONS="-Xmx6G" \
+            -e JAVA_OPTIONS="-Xmx12G" \
             opentripplanner/opentripplanner:latest --build --save
 
       - name: Upload Built Graph
