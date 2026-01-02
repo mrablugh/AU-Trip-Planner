@@ -1,14 +1,9 @@
-name: OpenTripPlanner Build
-
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
+name: OTP Graph Build
+on: [push]
 
 jobs:
-  build-otp:
+  build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,7 +15,7 @@ jobs:
             -e JAVA_OPTIONS="-Xmx12G" \
             opentripplanner/opentripplanner:latest --build --save
 
-      - name: Upload Built Graph
+      - name: Upload Graph Artifact
         uses: actions/upload-artifact@v4
         with:
           name: otp-graph
