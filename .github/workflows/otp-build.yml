@@ -1,0 +1,27 @@
+name: OpenTripPlanner Build
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-otp:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build OTP Graph
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/var/opentripplanner" \
+            -e JAVA_OPTIONS="-Xmx6G" \
+            opentripplanner/opentripplanner:latest --build --save
+
+      - name: Upload Built Graph
+        uses: actions/upload-artifact@v4
+        with:
+          name: otp-graph
+          path: graph.obj
