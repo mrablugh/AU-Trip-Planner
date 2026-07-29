@@ -19,6 +19,23 @@ jobs:
         run: |
           curl -L https://www.wmata.com/gtfs/rail-bus-gtfs-static.zip -o rail-bus-gtfs-static.zip
 
+      - name: Pull LFS data
+        run: git lfs pull
+
+      - name: Build OTP Graph
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/var/opentripplanner" \
+            -e JAVA_OPTIONS="-Xmx12G" \
+            opentripplanner/opentripplanner:latest --build --save
+
+      - name: Upload Graph Artifact
+        if: success() && hashFiles('graph.obj') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: otp-graph
+          path: graph.obj
+
       - name: Commit updated GTFS file
         run: |
           git config user.name "github-actions[bot]"
