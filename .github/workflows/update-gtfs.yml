@@ -17,7 +17,7 @@ jobs:
 
       - name: Download latest WMATA GTFS ZIP
         run: |
-          curl -L https://www.wmata.com/gtfs/rail-bus-gtfs-static.zip -o rail-bus-gtfs-static.zip
+          curl -v -X GET "https://api.wmata.com/gtfs/rail-bus-gtfs-static.zip" -H "Cache-Control: no-cache" -H "api_key: 6eb27769085d436294e417f4ea84cf51" -o rail-bus-gtfs-static.zip
 
       - name: Pull LFS data
         run: git lfs pull
