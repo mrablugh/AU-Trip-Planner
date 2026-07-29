@@ -16,11 +16,27 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download latest WMATA GTFS ZIP
+        env:
+          WMATA_API_KEY: ${{ secrets.WMATA_API_KEY }}
         run: |
-          curl -v -X GET "https://api.wmata.com/gtfs/rail-bus-gtfs-static.zip" -H "Cache-Control: no-cache" -H "api_key: 6eb27769085d436294e417f4ea84cf51" -o rail-bus-gtfs-static.zip
+          curl -v -X GET "https://api.wmata.com/gtfs/rail-bus-gtfs-static.zip" -H "Cache-Control: no-cache" -H "api_key: ${WMATA_API_KEY}" -o rail-bus-gtfs-static.zip
 
       - name: Pull LFS data
         run: git lfs pull
+
+      - name: Inject WMATA API key into router config
+        env:
+          WMATA_API_KEY: ${{ secrets.WMATA_API_KEY }}
+        run: |
+          python - <<'PY'
+          import os
+          import pathlib
+          path = pathlib.Path('router-config.json')
+          text = path.read_text()
+          text = text.replace('__WMATA_API_KEY__', os.environ['WMATA_API_KEY'])
+          path.write_text(text)
+          print('Injected WMATA API key into router-config.json')
+          PY
 
       - name: Build OTP Graph
         run: |
