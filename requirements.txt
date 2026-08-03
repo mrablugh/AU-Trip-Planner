@@ -1,2 +1,4 @@
 requests
 gtfs-realtime-bindings
+fastapi
+uvicorn[standard]
