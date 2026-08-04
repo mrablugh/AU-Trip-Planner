@@ -38,9 +38,6 @@ jobs:
           print('Injected WMATA API key into router-config.json')
           PY
 
-      - name: Remove stale graph
-        run: rm -f graph.obj
-
       - name: Build OTP Graph
         run: |
           docker run --rm \

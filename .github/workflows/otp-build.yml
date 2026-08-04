@@ -13,9 +13,6 @@ jobs:
       - name: Pull LFS data
         run: git lfs pull
 
-      - name: Remove stale graph
-        run: rm -f graph.obj
-
       - name: Build OTP Graph
         run: |
           docker run --rm \
