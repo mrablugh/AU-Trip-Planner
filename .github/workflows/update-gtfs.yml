@@ -44,19 +44,19 @@ jobs:
       - name: Pull LFS data
         run: git lfs pull
 
-      - name: Inject WMATA API key into router config
-        env:
-          WMATA_API_KEY: ${{ secrets.WMATA_API_KEY }}
-        run: |
-          python - <<'PY'
-          import os
-          import pathlib
-          path = pathlib.Path('router-config.json')
-          text = path.read_text()
-          text = text.replace('__WMATA_API_KEY__', os.environ['WMATA_API_KEY'])
-          path.write_text(text)
-          print('Injected WMATA API key into router-config.json')
-          PY
+      # - name: Inject WMATA API key into router config
+      #   env:
+      #     WMATA_API_KEY: ${{ secrets.WMATA_API_KEY }}
+      #   run: |
+      #     python - <<'PY'
+      #     import os
+      #     import pathlib
+      #     path = pathlib.Path('router-config.json')
+      #     text = path.read_text()
+      #     text = text.replace('__WMATA_API_KEY__', os.environ['WMATA_API_KEY'])
+      #     path.write_text(text)
+      #     print('Injected WMATA API key into router-config.json')
+      #     PY
 
       - name: Build OTP Graph
         run: |
