@@ -1,12 +1,17 @@
-name: Update WMATA GTFS
+name: Update WMATA GTFS and OSM
 
 on:
   schedule:
     - cron: '0 * * * *'
   workflow_dispatch:
+    inputs:
+      osm_extract_url:
+        description: 'Direct URL for the OSM PBF extract (optional)'
+        required: false
+        type: string
 
 jobs:
-  update-gtfs:
+  update-data:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -19,7 +24,18 @@ jobs:
         env:
           WMATA_API_KEY: ${{ secrets.WMATA_API_KEY }}
         run: |
-          curl -v -X GET "https://api.wmata.com/gtfs/rail-bus-gtfs-static.zip" -H "Cache-Control: no-cache" -H "api_key: ${WMATA_API_KEY}" -o rail-bus-gtfs-static.zip
+          curl -L --fail --retry 3 -X GET "https://api.wmata.com/gtfs/rail-bus-gtfs-static.zip" -H "Cache-Control: no-cache" -H "api_key: ${WMATA_API_KEY}" -o rail-bus-gtfs-static.zip
+
+      - name: Download latest OSM extract
+        env:
+          OSM_EXTRACT_URL: ${{ github.event.inputs.osm_extract_url || secrets.OSM_EXTRACT_URL || format('https://app.interline.io/osm_extracts/download_latest?string_id=dc-baltimore_maryland&data_format=pbf&api_token={0}', secrets.INTERLINE_API_KEY) }}
+        run: |
+          if [ -n "$OSM_EXTRACT_URL" ]; then
+            echo "Downloading OSM extract from $OSM_EXTRACT_URL"
+            curl -L --fail --retry 3 "$OSM_EXTRACT_URL" -o dc-baltimore_maryland.osm.pbf
+          else
+            echo "No OSM extract URL provided. Keeping the existing OSM file."
+          fi
 
       - name: Pull LFS data
         run: git lfs pull
@@ -52,10 +68,10 @@ jobs:
           name: otp-graph
           path: graph.obj
 
-      - name: Commit updated GTFS file
+      - name: Commit updated data files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add rail-bus-gtfs-static.zip
-          git commit -m "Update WMATA GTFS" || echo "No changes to commit"
+          git add rail-bus-gtfs-static.zip dc-baltimore_maryland.osm.pbf
+          git commit -m "Update WMATA GTFS and OSM data" || echo "No changes to commit"
           git push
