@@ -18,7 +18,7 @@ jobs:
           docker run --rm \
             -v "${{ github.workspace }}:/var/opentripplanner" \
             -e JAVA_OPTIONS="-Xmx12G" \
-            opentripplanner/opentripplanner@sha256:a4e31dea1da0cae08d4efa2428dc4b2e6829fcf17fac3595805bdb3472b3327d --build --save
+            opentripplanner/opentripplanner:latest --build --save
 
       - name: Upload Graph Artifact
         uses: actions/upload-artifact@v4
