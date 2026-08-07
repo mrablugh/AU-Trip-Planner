@@ -53,12 +53,6 @@
       "headers" : {
         "api_key" : "__WMATA_API_KEY__"
       }
-    },
-    {
-      "type": "vehicle-positions",
-      "frequency": "15s",
-      "url": "https://au-shuttle-gtfs-rt.onrender.com/gtfs-rt.pb",
-      "feedId": "AU_SHUTTLE"
     }
   ]
 }
